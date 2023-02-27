@@ -6,9 +6,16 @@ Entity::Entity(int posX, int posY, int velocityX, int velocityY)
 {
 }
 
-void Entity::move()
-{
 
+std::pair<int, int> Entity::getVelocity() const
+{
+	return { velocityX, velocityY };
+}
+
+void Entity::setVelocity(int velX, int velY)
+{
+	velocityX = velX;
+	velocityY = velY;
 }
 
 Player::Player(int posX, int posY, int velocityX, int velocityY, char color)
@@ -21,14 +28,43 @@ Player::Player(int posX, int posY, int velocityX, int velocityY, char color)
 		tex.loadFromFile("Data/images/padBlue.png");
 	
 	// Initializing the pad with the size and position.
-	pad.setSize(sf::Vector2f(50, 150));
+	pad.setSize(sf::Vector2f(30, 150));
 	pad.setPosition(posX, posY);
 	pad.setTexture(&tex);  // Setting the pad to the texture.
+}
+
+// Handling Player move.
+void Player::move()
+{
+	pad.move(velocityX, velocityY);
+
+	// Checking if player goes out of bound.
+	if (getPosY() < 0)
+		pad.setPosition(getPosX(), 0);
+
+	// Checking if player goes out of bound.
+	if (getPosY() + 150 > HEIGHT)
+		pad.setPosition(getPosX(), HEIGHT - 150);
 }
 
 sf::RectangleShape Player::getPad() const
 {
 	return pad;
+}
+
+int Player::getPosX() const
+{
+	return pad.getPosition().x;
+}
+
+int Player::getPosY() const
+{
+	return pad.getPosition().y;
+}
+
+void Player::setPos(int posX, int posY)
+{
+	pad.setPosition(posX, posY);
 }
 
 Ball::Ball(int posX, int posY, int velocityX, int velocityY)
@@ -52,7 +88,53 @@ Ball::Ball(int posX, int posY, int velocityX, int velocityY)
 	Score.setBuffer(buff_Score);
 }
 
+// Handling ball move.
+void Ball::move(Player& player1, Player& player2)
+{
+	ball.move(velocityX, velocityY);
+
+	// Checking if the ball hit the wall.
+	if (getPosY() < 0 || getPosY() + 50 > HEIGHT)
+	{
+		velocityY *= -1;
+		hitWall.play();
+	}
+
+	// Checking if the ball is out of bound (A player lost).
+	if (getPosX() + 35 < 0 || getPosX() > WIDTH)
+	{
+		// Setting the default position.
+		ball.setPosition(WIDTH / 2 - 35, HEIGHT / 2 - 35);
+
+		// Setting the default velocities.
+		velocityX = 3;
+		velocityY = 3;
+
+		player1.setPos(player1.getPosX(), HEIGHT / 2 - 80);
+		player2.setPos(player2.getPosX(), HEIGHT / 2 - 80);
+
+		Score.play();
+	}
+
+	if (ball.getGlobalBounds().intersects(player1.getPad().getGlobalBounds()) ||
+		ball.getGlobalBounds().intersects(player2.getPad().getGlobalBounds()))
+	{
+		velocityX *= -1;
+		hitPad.play();
+	}
+}
+
 sf::RectangleShape Ball::getPad() const
 {
 	return ball;
+}
+
+int Ball::getPosX() const
+{
+	return ball.getPosition().x;
+}
+
+int Ball::getPosY() const
+{
+	return ball.getPosition().y;
 }

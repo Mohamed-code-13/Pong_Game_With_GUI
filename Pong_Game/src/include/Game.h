@@ -1,11 +1,6 @@
 #pragma once
 #include "Engine.h"
 
-// The width and the height of the game.
-#define WIDTH 1000
-#define HEIGHT 600
-#define FPS 60
-
 class playPong
 {
 public:
@@ -14,6 +9,8 @@ public:
 
 	void runGame();
 	void draw();
+	void move();
+	void aiMove();
 
 private:
 	sf::RenderWindow* window;
