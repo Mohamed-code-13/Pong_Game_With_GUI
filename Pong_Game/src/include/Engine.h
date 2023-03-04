@@ -17,7 +17,7 @@
 class Entity
 {
 protected:
-	int posX, posY, velocityX, velocityY;
+	float posX, posY, velocityX, velocityY;
 	sf::Texture tex;
 
 public:
@@ -30,6 +30,9 @@ public:
 
 class Player : public Entity
 {
+public:
+	int score;
+
 public:
 	Player(int posX, int posY, int velocityX, int velocityY, char color);
 
@@ -53,7 +56,7 @@ class Ball : public Entity
 public:
 	Ball(int posX, int posY, int velocityX, int velocityY);
 	
-	void move(Player& player1, Player& player2);
+	void move(Player& player1, Player& player2, sf::Text& scoreTxt);
 
 	sf::RectangleShape getPad() const;
 	int getPosX() const;
@@ -61,7 +64,7 @@ public:
 
 private:
 	void handleCollision(Player& player1, Player& player2);
-	void handleWinning(Player& player1, Player& player2);
+	void handleWinning(Player& player1, Player& player2, sf::Text& scoreTxt);
 	void handleHittingWall();
 
 private:

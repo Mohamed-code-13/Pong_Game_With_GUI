@@ -2,12 +2,21 @@
 
 playPong::playPong()
 {
-	// Initializing the window and the game objects on the heap.
+	// Initializing the game window.
 	window = new sf::RenderWindow(sf::VideoMode(WIDTH, HEIGHT), "Pong Game");
 
+	// Initializing the players and the ball.
 	player1 = new Player(50, HEIGHT / 2 - 80, 0, 0, 'R');
 	player2 = new Player(WIDTH - 100, HEIGHT / 2 - 80, 0, 0, 'B');
 	ball = new Ball(WIDTH / 2 - 35, HEIGHT / 2 - 35, -5, -3);
+
+	// Initializing the score and text.
+	font.loadFromFile("Data/oswald.ttf");
+	scoreTxt.setFont(font);
+	scoreTxt.setCharacterSize(50);
+	scoreTxt.setFillColor(sf::Color::White);
+	scoreTxt.setPosition(WIDTH / 2 - 30, 20);
+	scoreTxt.setString("0 - 0");
 }
 
 playPong::~playPong()
@@ -52,7 +61,7 @@ void playPong::runGame()
 		}
 
 		// Moving
-		move();
+		move(scoreTxt);
 
 		// Drawing the window.
 		draw();
@@ -63,18 +72,19 @@ void playPong::draw()
 {
 	window->clear();  // Clearing the window.
 
-	// Drawing the two players and the ball.
+	// Drawing the two players, the ball and the text.
 	window->draw(player1->getPad());
 	window->draw(player2->getPad());
 	window->draw(ball->getPad());
+	window->draw(scoreTxt);
 	
 	window->display();  // Displaying on the window.
 }
 
-void playPong::move()
+void playPong::move(sf::Text& scoreTxt)
 {
 	player1->move();
-	ball->move(*player1, *player2);
+	ball->move(*player1, *player2, scoreTxt);
 
 	aiMove();
 
@@ -98,4 +108,9 @@ void playPong::aiMove()
 	{
 		player2->setVelocity(0, 0);
 	}
+}
+
+std::string playPong::getScore()
+{
+	return "";
 }

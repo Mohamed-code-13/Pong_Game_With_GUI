@@ -31,6 +31,8 @@ Player::Player(int posX, int posY, int velocityX, int velocityY, char color)
 	pad.setSize(sf::Vector2f(30, 150));
 	pad.setPosition(posX, posY);
 	pad.setTexture(&tex);  // Setting the pad to the texture.
+
+	score = 0;
 }
 
 // Handling Player move.
@@ -89,13 +91,13 @@ Ball::Ball(int posX, int posY, int velocityX, int velocityY)
 }
 
 // Handling ball move.
-void Ball::move(Player& player1, Player& player2)
+void Ball::move(Player& player1, Player& player2, sf::Text& scoreTxt)
 {
 	ball.move(velocityX, velocityY);
 
 	handleHittingWall();
 
-	handleWinning(player1, player2);
+	handleWinning(player1, player2, scoreTxt);
 
 	handleCollision(player1, player2);
 }
@@ -106,9 +108,9 @@ void Ball::handleCollision(Player& player1, Player& player2)
 		ball.getGlobalBounds().intersects(player2.getPad().getGlobalBounds()))
 	{
 		if (velocityX > 0)
-			velocityX += 1;
+			velocityX += 0.3;
 		else
-			velocityX -= 1;
+			velocityX -= 0.3;
 		/*
 		player1.setVelocity(0, player1.getVelocity().second + 1);
 		player2.setVelocity(0, player2.getVelocity().second + 1);
@@ -118,7 +120,7 @@ void Ball::handleCollision(Player& player1, Player& player2)
 	}
 }
 
-void Ball::handleWinning(Player& player1, Player& player2)
+void Ball::handleWinning(Player& player1, Player& player2, sf::Text& scoreTxt)
 {
 	// Checking if the ball is out of bound (A player lost).
 	if (getPosX() + 35 < 0 || getPosX() > WIDTH)
@@ -129,6 +131,8 @@ void Ball::handleWinning(Player& player1, Player& player2)
 			// Setting the default velocities.
 			velocityX = 5;
 			velocityY = 3;
+
+			player2.score++;
 		}
 		// Checking if Player 2 lost.
 		else if (getPosX() > WIDTH)
@@ -136,7 +140,12 @@ void Ball::handleWinning(Player& player1, Player& player2)
 			// Setting the default velocities.
 			velocityX = -5;
 			velocityY = -3;
+
+			player1.score++;
 		}
+
+		std::string score = std::to_string(player1.score) + " - " + std::to_string(player2.score);
+		scoreTxt.setString(score);
 
 		// Setting the default position.
 		ball.setPosition(WIDTH / 2 - 35, HEIGHT / 2 - 35);
@@ -161,9 +170,9 @@ void Ball::handleHittingWall()
 	if (getPosY() < 0 || getPosY() + 50 > HEIGHT)
 	{
 		if (velocityY > 0)
-			velocityY += 1;
+			velocityY += 0.2;
 		else
-			velocityY -= 1;
+			velocityY -= 0.2;
 
 		velocityY *= -1;  // changing the direction of Y.
 		hitWall.play();  // Playing the hit wall sound.
