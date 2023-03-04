@@ -60,6 +60,11 @@ public:
 	int getPosY() const;
 
 private:
+	void handleCollision(Player& player1, Player& player2);
+	void handleWinning(Player& player1, Player& player2);
+	void handleHittingWall();
+
+private:
 	sf::RectangleShape ball;
 	
 	sf::SoundBuffer buff_hitPad;

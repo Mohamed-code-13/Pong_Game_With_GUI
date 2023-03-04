@@ -7,7 +7,7 @@ playPong::playPong()
 
 	player1 = new Player(50, HEIGHT / 2 - 80, 0, 0, 'R');
 	player2 = new Player(WIDTH - 100, HEIGHT / 2 - 80, 0, 0, 'B');
-	ball = new Ball(WIDTH / 2 - 35, HEIGHT / 2 - 35, 5, 0);
+	ball = new Ball(WIDTH / 2 - 35, HEIGHT / 2 - 35, -5, -3);
 }
 
 playPong::~playPong()

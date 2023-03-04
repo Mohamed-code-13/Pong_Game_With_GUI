@@ -93,34 +93,80 @@ void Ball::move(Player& player1, Player& player2)
 {
 	ball.move(velocityX, velocityY);
 
-	// Checking if the ball hit the wall.
-	if (getPosY() < 0 || getPosY() + 50 > HEIGHT)
-	{
-		velocityY *= -1;
-		hitWall.play();
-	}
+	handleHittingWall();
 
-	// Checking if the ball is out of bound (A player lost).
-	if (getPosX() + 35 < 0 || getPosX() > WIDTH)
-	{
-		// Setting the default position.
-		ball.setPosition(WIDTH / 2 - 35, HEIGHT / 2 - 35);
+	handleWinning(player1, player2);
 
-		// Setting the default velocities.
-		velocityX = 3;
-		velocityY = 3;
+	handleCollision(player1, player2);
+}
 
-		player1.setPos(player1.getPosX(), HEIGHT / 2 - 80);
-		player2.setPos(player2.getPosX(), HEIGHT / 2 - 80);
-
-		Score.play();
-	}
-
+void Ball::handleCollision(Player& player1, Player& player2)
+{
 	if (ball.getGlobalBounds().intersects(player1.getPad().getGlobalBounds()) ||
 		ball.getGlobalBounds().intersects(player2.getPad().getGlobalBounds()))
 	{
-		velocityX *= -1;
-		hitPad.play();
+		if (velocityX > 0)
+			velocityX += 1;
+		else
+			velocityX -= 1;
+		/*
+		player1.setVelocity(0, player1.getVelocity().second + 1);
+		player2.setVelocity(0, player2.getVelocity().second + 1);
+		*/
+		velocityX *= -1;  // changing the direction of Y.
+		hitPad.play();  // Playing the hit wall sound.
+	}
+}
+
+void Ball::handleWinning(Player& player1, Player& player2)
+{
+	// Checking if the ball is out of bound (A player lost).
+	if (getPosX() + 35 < 0 || getPosX() > WIDTH)
+	{
+		// Checking if Player 1 lost.
+		if (getPosX() + 35 < 0)
+		{
+			// Setting the default velocities.
+			velocityX = 5;
+			velocityY = 3;
+		}
+		// Checking if Player 2 lost.
+		else if (getPosX() > WIDTH)
+		{
+			// Setting the default velocities.
+			velocityX = -5;
+			velocityY = -3;
+		}
+
+		// Setting the default position.
+		ball.setPosition(WIDTH / 2 - 35, HEIGHT / 2 - 35);
+	
+		// Setting the default positions
+		player1.setPos(player1.getPosX(), HEIGHT / 2 - 80);
+		player2.setPos(player2.getPosX(), HEIGHT / 2 - 80);
+
+		/*
+		player1.setVelocity(0, 0);
+		player2.setVelocity(0, 0);
+		*/
+
+		// Playing the score sound.
+		Score.play();
+	}
+}
+
+void Ball::handleHittingWall()
+{
+	// Checking if the ball hit the wall.
+	if (getPosY() < 0 || getPosY() + 50 > HEIGHT)
+	{
+		if (velocityY > 0)
+			velocityY += 1;
+		else
+			velocityY -= 1;
+
+		velocityY *= -1;  // changing the direction of Y.
+		hitWall.play();  // Playing the hit wall sound.
 	}
 }
 
